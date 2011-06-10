@@ -31,6 +31,7 @@ while($quit == false){
 			echo("help    - Show this help\n");
 			echo("users   - list users\n");
 			echo("adduser - Add new user to the system\n");
+            echo("rmuser  - Remove user from the system\n");
             echo("log     - Start log feed\n");
 			break;
         case "adduser":
@@ -44,6 +45,14 @@ while($quit == false){
                 echo("Error code $result\n");
             }
 
+            break;
+        case "rmuser":
+            $name = ReadStdin("Name> ");
+            $statement = $db->prepare("DELETE FROM users WHERE username = ?");
+            $statement->bindParam(1,$name);
+            $statement->execute();
+
+            echo("Delete query done!\n");
             break;
         case "users":
             $statement = $db->prepare("SELECT username FROM users");
