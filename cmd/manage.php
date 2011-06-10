@@ -45,6 +45,17 @@ while($quit == false){
             }
 
             break;
+        case "users":
+            $statement = $db->prepare("SELECT username FROM users");
+            $statement->execute();
+            echo("Listing users....\n");
+            
+            while($row = $statement->fetch()){
+                $name = $row['username'];
+
+                echo("$name\n");
+            }
+            break;
 		case "log":
 			echo("Starting log feed...");
 				while($quit == false){
