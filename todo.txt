@@ -1,0 +1,3 @@
+* manual register without form (?)
+* CMD user management
+* database connection sucks
