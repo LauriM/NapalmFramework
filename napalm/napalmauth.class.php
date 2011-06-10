@@ -31,6 +31,7 @@ class NapalmAuth{
 	}
 
     public function api_auth(){
+        global $db;
         $user_name = $_POST['username'];
         $user_pass = passwordhash($_POST['password']);
 
@@ -39,9 +40,14 @@ class NapalmAuth{
             $user_pass = passwordhash($_GET['password']);
         }
 
-        $result = query("SELECT * FROM users WHERE username = '$user_name' AND password = '$user_pass'");
-        if(mysql_num_rows($result) == 1){
-            $user_auth_done = 1;
+        //Check that user is in the database
+        $statement = $db->prepare("SELECT * FROM users WHERE username = ? AND password = ?");
+        $statement->bindParam(1,$this->user_name,PDO::PARAM_INT);
+        $statement->bindParam(2,$this->user_pass,PDO::PARAM_INT);
+        $statement->execute();
+
+        if($statement->rowCount() == 1){
+            $user_auth_done  = 1;
 			$this->user_name = $user_name;
         }
 
@@ -79,11 +85,15 @@ class NapalmAuth{
     }
 
 	public function change_password($username,$new){
+        global $db;
 		//TODO: check that user exits
 		//TODO: Add check for old password
 		$new = passwordhash($new);
 
-		query("UPDATE users SET password = '$new' WHERE username = '$username'");
+        $statement->prepare("UPDATE users SET password = ? WHERE username = ?");
+        $statement->bindParam(1,$new);
+        $statement->bindParam(2,$username);
+        $statement->execute();
 		
 		return 1;
 	}
@@ -97,6 +107,7 @@ class NapalmAuth{
     }
 
 	public function add_user($username,$password,$skip_captha = false){
+        global $db;
 		$captha_ok = false;
 
 		if($this->recaptha_enable == true){
@@ -116,7 +127,9 @@ class NapalmAuth{
 		if($captha_ok == false){
 			return 6;
 		}else{
-			$result = query("SELECT * FROM users WHERE username = '$username'");
+            $statement = $db->prepare("SELECT * FROM users WHERE username = ?");
+            $statement->bindParam(1,$username);
+            $statement->execute();
 
 			if(preg_match('/^[a-zA-Z0-9]+$/',$username) == false){
 				$invalid_name = true;
@@ -134,9 +147,14 @@ class NapalmAuth{
 				$invalid_password = true;
 			}
 
-			if(mysql_num_rows($result) == 0 AND $username <> "" AND $invalid_password == false AND $invalid_name == false){
-				$hash = passwordhash($password);
-				query("INSERT INTO users(username,password) VALUES('$username','$hash');");
+			if($statement->rowCount() == 0 AND $username <> "" AND $invalid_password == false AND $invalid_name == false){
+				$hash = passwordhash($password);//TODO: move away from functions?
+
+                $statement = $db->prepare("INSERT INTO users(username,password) VALUES(?,?)");
+                $statement->bindParam(1,$username);
+                $statement->bindParam(2,$hash);
+                $statement->execute();
+
 				$status = 1;
 			}else{
 				$status = 2;
@@ -145,7 +163,7 @@ class NapalmAuth{
 					$status = 3;
 				}
 
-				if(mysql_num_rows($result) > 0){
+				if($statement->rowCount() > 0){
 					$status = 4;
 				}
 
