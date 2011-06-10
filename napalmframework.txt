@@ -1,0 +1,15 @@
+File-list:
+
+*Api/
+	index.php - Api auth
+	engine.php - Api main switch
+*Include/
+	- contains users own files to be included
+*Napalm/
+	- contains all napalm related files and classes
+*Priv/
+	index.php - Will be included when user is logged in
+*Publ/
+	index.php - Will be included when user is _not_ logged in
+*config.php - Database/recaptha settings + user settings
+*index.php - Main file
