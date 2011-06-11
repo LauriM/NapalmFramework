@@ -58,7 +58,7 @@ class NapalmAuth{
         global $db;
 		//Check if user logs in/registers new account via the public pages
         if($_GET['napalmauth'] == "login"){
-            $this->user_name = secure($_POST['username']);
+            $this->user_name = $_POST['username'];
             $this->user_pass = passwordhash($_POST['password']);
 
             $_SESSION['username'] = $this->user_name;
