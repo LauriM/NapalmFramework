@@ -1,6 +1,7 @@
 <?php
 class NapalmData{
     public function getdata($owner,$variable){
+        global $db;
 		global $datacache_owner;
 		global $datacache_variable;
 		global $datacache_value;
@@ -14,37 +15,47 @@ class NapalmData{
 			}
 		}
 
-        $owner = secure($owner);
-        $variable = secure($variable);
-        $result = query("SELECT value FROM data WHERE owner = '$owner' AND variable = '$variable'");
-        $count = mysql_num_rows($result);
+        $statement = $db->prepare("SELECT value FROM data WHERE owner = ? AND variable = ?");
+        $statement->bindParam(1,$owner);
+        $statement->bindParam(2,$variable);
+        $statement->execute();
+
+        $count = $statement->rowCount($result);
 
         if($count == 1){
 			$size = sizeof($datacache_owner);
 
+            $value = $statement->fetchColumn();
+
 			$datacache_owner[$size]    = $owner;
 			$datacache_variable[$size] = $variable;
-			$datacache_value[$size]    = mysql_result($result,0,"value");
-            return(mysql_result($result,0,"value"));
+			$datacache_value[$size]    = $value; 
+
+            return($value);
         }else{
             return(0);
         }
     }
 
     public function setdata($owner,$variable,$value){
+        global $db;
 		global $datacache_owner;
 		global $datacache_variable;
 		global $datacache_value;
 
-        $owner = secure($owner);
-        $variable = secure($variable);
-        $value = secure($value);
+        $statement = $db->prepare("SELECT value FROM data WHERE owner = ? AND variable = ?");
+        $statement->bindParam(1,$owner);
+        $statement->bindParam(2,$variable);
+        $statement->execute();
 
-        $result = query("SELECT value FROM data WHERE owner = '$owner' AND variable = '$variable'");
-        $count = mysql_num_rows($result);
+        $count = $statement->rowCount();
 
         if($count == 1){
-            query("UPDATE data SET value = '$value' WHERE owner = '$owner' AND variable = '$variable'");
+            $statement = $db->prepare("UPDATE data SET value = ? WHERE owner = ? AND variable = ?");
+            $statement->bindParam(1,$value);
+            $statement->bindParam(2,$owner);
+            $statement->bindParam(3,$variable);
+            $statement->execute();
 
 			//Update cache
 			for($i = 0;$i < sizeof($datacache_owner);$i++){
@@ -53,7 +64,11 @@ class NapalmData{
 				}
 			}
         }else{
-            query("INSERT INTO data(owner,variable,value) VALUES('$owner','$variable','$value')");
+            $statement = $db->prepare("INSERT INTO data(owner,variable,value) VALUES(?,?,?)");
+            $statement->bindParam(1,$owner);
+            $statement->bindParam(2,$variable);
+            $statement->bindParam(3,$value);
+            $statement->execute();
 
 			//Add new value to cache
 			$size = sizeof($datacache_owner) + 1;
