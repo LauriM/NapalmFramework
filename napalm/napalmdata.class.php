@@ -75,7 +75,7 @@ class NapalmData{
 
 			$datacache_owner[$size]    = $owner;
 			$datacache_variable[$size] = $variable;
-			$datacache_value[$size]    = mysql_result($result,0,"value");
+			$datacache_value[$size]    = $value; 
         }
 
     }

@@ -32,8 +32,24 @@ while($quit == false){
 			echo("users   - list users\n");
 			echo("adduser - Add new user to the system\n");
             echo("rmuser  - Remove user from the system\n");
+            echo("dataget - Get variable\n");
             echo("log     - Start log feed\n");
 			break;
+        case "dataget":
+            $owner    = ReadStdin("Owner> ");
+            $variable = ReadStdin("Variable> ");
+
+            $data = $napalmdata->getdata($owner,$variable);
+
+            echo("$data\n");
+            break;
+        case "dataset":
+            $owner    = ReadStdin("Owner> ");
+            $variable = ReadStdin("Variable> ");
+            $value    = ReadStdin("Value> ");
+
+            $napalmdata->setdata($owner,$variable,$value);
+            echo("Done!\n");
         case "adduser":
             $name = ReadStdin("Name> ");
             $password = ReadStdin("Password> ");
