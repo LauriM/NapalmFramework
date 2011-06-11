@@ -8,11 +8,17 @@
 // 5 = Critical
 class NapalmLog{
     public function add($line,$level,$username = "NULL"){
-        $line  = secure($line);
-        $level = secure($level);
+        global $db;
 		$time  = time();
 		$ip    = $_SERVER['REMOTE_ADDR'];
-		query("INSERT INTO `log`(msg,lvl,unixtime,owner,ip) VALUES('$line','$level','$time','$username','$ip');");
+
+        $statement = $db->prepare("INSERT INTO `log`(msg,lvl,unixtime,owner,ip) VALUES(?,?,?,?,?)");
+        $statement->bindParam(1,$line);
+        $statement->bindParam(2,$level);
+        $statement->bindParam(3,$time);
+        $statement->bindParam(4,$username);
+        $statement->bindParam(5,$ip);
+        $statement->execute();
     }
 }
 
