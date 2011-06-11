@@ -1,3 +1,4 @@
 * Registering directly calling napalmframework could be possible... test 
 * Install guide
 * Development guide
+* Check that password hash is working well

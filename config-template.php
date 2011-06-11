@@ -1,12 +1,14 @@
 <?php
 
-$db_server   = "localhost";
-$db_engine   = "mysql";
-$db_username = "";
-$db_password = "";
-$db_database = "";
-$napalm_seed = "";
+define('NAPALM_DB_SERVER','localhost');
+define('NAPALM_DB_ENGINE','mysql');
+define('NAPALM_DB_USERNAME','');
+define('NAPALM_DB_PASSWORD','');
+define('NAPALM_DB_DATABASE','');
 
-$api_enable = false;
+define('NAPALM_SEED','');//Write random string here
+
+define('NAPALM_API_ENABLE','false');
+
 //TODO: ADD RECAPTHA SETTINGS HERE
 ?>
