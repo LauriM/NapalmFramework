@@ -2,6 +2,7 @@
 class NapalmAuth{
     private $user_name = "";
     private $user_pass = "";
+    private $user_id = "";
     private $user_auth_done = 0;
 	private $recaptha_enable;
 	private $recaptha_public;
@@ -104,6 +105,23 @@ class NapalmAuth{
 
     public function user_name(){
         return $this->user_name;
+    }
+
+    public function user_id(){
+        global $db;
+
+        if(isset($user_id) == false){
+            $statement = $db->prepare("SELECT ID FROM users WHERE username = ?");
+            $statement->bindParam(1,$this->user_name);
+            $statement->execute();
+
+            $user_id = $statement->fetch();
+            $user_id = $user_id['ID'];
+
+            return $user_id;
+        }else{
+            return $user_id;
+        }
     }
 
 	public function add_user($username,$password,$skip_captha = false){
